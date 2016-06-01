@@ -1,0 +1,795 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+/*----------------------------------------------------------------------------------------------------------------------
+class ChessMan declaration:
+----------------------------------------------------------------------------------------------------------------------*/
+public class ChessMan {
+
+    //Attributes of ChessMan:
+    char color;
+    String id;
+    String position;
+    char type;
+    //to check whether the particular position in the board is occupied or not:
+    char pos_occ;
+
+    //initializing variable to hold Board Index:
+    String board_index;
+
+    //initializing List to capture history:
+    List History = new ArrayList();
+
+    //initializing variable to store input:
+    String input;
+
+    //flag value to change alternative plays:
+    char flag = 'W';
+    //constructor to initialize all variables to null:
+    ChessMan() {
+        color = ' ';
+                //Character.MIN_VALUE;
+        id = null;
+        position = null;
+        type = ' ';
+        pos_occ = 'N';
+    }
+
+    ChessMan[][] cm_array = new ChessMan[9][9];
+
+    /*------------------------------------------------------------------------------------------------------------------
+    Board Printing Function:
+    ------------------------------------------------------------------------------------------------------------------*/
+    void print_board(){
+        for (int row = 0; row < cm_array.length; row++) {
+            for(int col = 0; col < cm_array.length; col++) {
+                    if (cm_array[row][col].board_index != null) {
+                        System.out.print(cm_array[row][col].board_index);
+                    }
+                    else {
+                        System.out.print(cm_array[row][col].color);
+                        System.out.print(cm_array[row][col].type);
+                    }
+                    System.out.print(" | ");
+            }
+
+            System.out.println("");
+            System.out.println("--------------------------------------------");
+
+        }
+        System.out.println("Please enter your move:");
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    chessman move method:
+    ------------------------------------------------------------------------------------------------------------------*/
+    void move_chessman(String input_move) {
+
+        //To store the present row & col value
+        int present_row = 0 , present_col = 0;
+
+        //To store the next row & col value:
+        int next_row = 0 , next_col = 0;
+
+        //To split the input String:
+        String present_move = input_move.substring(1,3);
+        String next_move = input_move.substring(4,6);
+
+        //To decode row and column position of present move:
+        switch (Character.getNumericValue(present_move.charAt(1))) {
+            case 1 : present_row = 8; break;
+            case 2 : present_row = 7; break;
+            case 3 : present_row = 6; break;
+            case 4 : present_row = 5; break;
+            case 5 : present_row = 4; break;
+            case 6 : present_row = 3; break;
+            case 7 : present_row = 2; break;
+            case 8 : present_row = 1; break;
+        }
+        switch (present_move.charAt(0)) {
+            case 'a' : present_col = 1; break;
+            case 'b' : present_col = 2; break;
+            case 'c' : present_col = 3; break;
+            case 'd' : present_col = 4; break;
+            case 'e' : present_col = 5; break;
+            case 'f' : present_col = 6; break;
+            case 'g' : present_col = 7; break;
+            case 'h' : present_col = 8; break;
+        }
+
+        //To decode row and column position of next move:
+        switch (Character.getNumericValue(next_move.charAt(1))) {
+            case 1 : next_row = 8; break;
+            case 2 : next_row = 7; break;
+            case 3 : next_row = 6; break;
+            case 4 : next_row = 5; break;
+            case 5 : next_row = 4; break;
+            case 6 : next_row = 3; break;
+            case 7 : next_row = 2; break;
+            case 8 : next_row = 1; break;
+        }
+        switch (next_move.charAt(0)) {
+            case 'a' : next_col = 1; break;
+            case 'b' : next_col = 2; break;
+            case 'c' : next_col = 3; break;
+            case 'd' : next_col = 4; break;
+            case 'e' : next_col = 5; break;
+            case 'f' : next_col = 6; break;
+            case 'g' : next_col = 7; break;
+            case 'h' : next_col = 8; break;
+        }
+
+
+        // swapping the values of the objects:
+        if (cm_array[next_row][next_col].pos_occ == 'N') {
+            cm_array[next_row][next_col].color = cm_array[present_row][present_col].color;
+            cm_array[next_row][next_col].id = cm_array[present_row][present_col].id;
+            cm_array[next_row][next_col].type = cm_array[present_row][present_col].type;
+            cm_array[next_row][next_col].pos_occ = 'Y';
+
+            // empty the current object:
+            cm_array[present_row][present_col].color = ' ';
+            cm_array[present_row][present_col].id = null;
+            cm_array[present_row][present_col].type = ' ';
+            cm_array[present_row][present_col].pos_occ = 'N';
+        }
+        else {
+            System.out.println("invalid move");
+            flag = get_color(input);
+        }
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    implementation of method input validation:
+    ------------------------------------------------------------------------------------------------------------------*/
+    boolean validate(String input) {
+
+        //To validate given input string i need five boolean because i'm going to assign
+        //every position in the string to boolean. if 6 boolean variable's are true means the given input is true.
+        boolean input_1 = false;
+        boolean input_2 = false;
+        boolean input_3 = false;
+        boolean input_4 = false;
+        boolean input_5 = false;
+        boolean input_6 = false;
+
+        //validation for first position in given input string:
+        if (input.charAt(0) == 'K' || input.charAt(0) == 'Q' || input.charAt(0) == 'B' || input.charAt(0) == 'N' || input.charAt(0) == 'R' || input.charAt(0) == 'P') {
+            input_1 = true;
+        }
+        else {
+            input_1 = false;
+        }
+
+        //validation for second position in the given input string:
+        if (input.charAt(1) == 'a' || input.charAt(1) == 'b' || input.charAt(1) == 'c' || input.charAt(1) == 'd' || input.charAt(1) == 'e' || input.charAt(1) == 'f' || input.charAt(1) == 'g' ||
+                input.charAt(1) == 'h') {
+            input_2 = true;
+        }
+        else {
+            input_2 = false;
+        }
+
+        //validation for 3rd position in the given input string:
+        if (Character.getNumericValue(input.charAt(2)) == 1 || Character.getNumericValue(input.charAt(2)) == 2 || Character.getNumericValue(input.charAt(2)) == 3 || Character.getNumericValue(input.charAt(2)) == 4 || Character.getNumericValue(input.charAt(2)) == 5 || Character.getNumericValue(input.charAt(2)) == 6 ||
+                Character.getNumericValue(input.charAt(2)) == 7 || Character.getNumericValue(input.charAt(2)) == 8) {
+            input_3 = true;
+        } else {
+            input_3 = false;
+        }
+
+        //validation for 4th position in the given input string:
+        if (input.charAt(3) == '-') {
+            input_4 = true;
+        }
+        else {
+            input_4 = false;
+            //System.out.println(input_4);
+        }
+
+        //validation for 5th position in the given input string:
+        if (input.charAt(4) == 'a' || input.charAt(4) == 'b' || input.charAt(4) == 'c' || input.charAt(4) == 'd' || input.charAt(4) == 'e' || input.charAt(4) == 'f' || input.charAt(4) == 'g' ||
+                input.charAt(4) == 'h') {
+            input_5 = true;
+        }
+        else {
+            input_5 = false;
+        }
+
+        //validation for 6th position in the given input string:
+        if (Character.getNumericValue(input.charAt(5)) == 1 || Character.getNumericValue(input.charAt(5)) == 2 || Character.getNumericValue(input.charAt(5)) == 3 || Character.getNumericValue(input.charAt(5)) == 4 || Character.getNumericValue(input.charAt(5)) == 5 || Character.getNumericValue(input.charAt(5)) == 6 ||
+                Character.getNumericValue(input.charAt(5)) == 7 || Character.getNumericValue(input.charAt(5)) == 8) {
+            input_6 = true;
+        }
+        else {
+            input_6 = false;
+        }
+
+        //final condition to check all the 6 boolean variables to validate given input
+        if (input_1 == true && input_2 == true && input_3 == true && input_4 == true && input_5 == true && input_6 == true) {
+            return true;
+        }
+        else {
+            System.out.println("not an valid move");
+            return false;
+        }
+
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    implementation of knight validation:
+    ------------------------------------------------------------------------------------------------------------------*/
+    boolean validate_knight_move() {
+
+        //rechanged the array declaration because it need to be accessed by suggession logic:
+        int[] row_result = new int[8];
+        int[] col_result = new int[8];
+
+        //need to give input string:
+        if(input.charAt(0) == 'N'){
+            //To store the present row & col value
+            int present_row = 0 , present_col = 0;
+
+            //To store the next row & col value:
+            int next_row = 0 , next_col = 0;
+
+            //To split the input String:
+            String present_move = input.substring(1,3);
+            String next_move = input.substring(4,6);
+
+            //To decode row and column position of present move:
+            switch (Character.getNumericValue(present_move.charAt(1))) {
+                case 1 : present_row = 8; break;
+                case 2 : present_row = 7; break;
+                case 3 : present_row = 6; break;
+                case 4 : present_row = 5; break;
+                case 5 : present_row = 4; break;
+                case 6 : present_row = 3; break;
+                case 7 : present_row = 2; break;
+                case 8 : present_row = 1; break;
+            }
+            switch (present_move.charAt(0)) {
+                case 'a' : present_col = 1; break;
+                case 'b' : present_col = 2; break;
+                case 'c' : present_col = 3; break;
+                case 'd' : present_col = 4; break;
+                case 'e' : present_col = 5; break;
+                case 'f' : present_col = 6; break;
+                case 'g' : present_col = 7; break;
+                case 'h' : present_col = 8; break;
+            }
+
+            //To decode row and column position of next move:
+            switch (Character.getNumericValue(next_move.charAt(1))) {
+                case 1 : next_row = 8; break;
+                case 2 : next_row = 7; break;
+                case 3 : next_row = 6; break;
+                case 4 : next_row = 5; break;
+                case 5 : next_row = 4; break;
+                case 6 : next_row = 3; break;
+                case 7 : next_row = 2; break;
+                case 8 : next_row = 1; break;
+            }
+            switch (next_move.charAt(0)) {
+                case 'a' : next_col = 1; break;
+                case 'b' : next_col = 2; break;
+                case 'c' : next_col = 3; break;
+                case 'd' : next_col = 4; break;
+                case 'e' : next_col = 5; break;
+                case 'f' : next_col = 6; break;
+                case 'g' : next_col = 7; break;
+                case 'h' : next_col = 8; break;
+            }
+
+            //initialized 2 arrays to store test cases:
+            int[] row_testcase = {-2,-1,1,2,2,1,-1,-2};
+            int[] col_testcase = {1,2,2,1,-1,-2,-2,-1};
+
+            //values subtracted to get the results and stored in the result arrays
+            for(int i=0; i<row_testcase.length; i++){
+                row_result[i] = present_row - row_testcase[i];
+            }
+            for(int i=0; i<col_testcase.length; i++){
+                col_result[i] = present_col - col_testcase[i];
+            }
+
+            for(int i=0; i<row_testcase.length; i++){
+                if(next_row == row_result[i] && next_col == col_result[i]){
+                    return true;
+                }
+            }
+        }
+        //implementing the suggestion logic:
+        //real logic:
+        flag = get_color(input);
+        System.out.println("Sorry the movement is not valid for a Knight.");
+        for(int i=0; i<8; i++){
+            String suggestion = "";
+            if(row_result[i]>0 && row_result[i]<9){
+                if(col_result[i]>0 && col_result[i]<9){
+                    if(cm_array[row_result[i]][col_result[i]].pos_occ == 'N'){
+
+                        //logic for col encoding:
+                        switch(col_result[i]) {
+                            case 1: suggestion += "a"; break;
+                            case 2: suggestion += "b"; break;
+                            case 3: suggestion += "c"; break;
+                            case 4: suggestion += "d"; break;
+                            case 5: suggestion += "e"; break;
+                            case 6: suggestion += "f"; break;
+                            case 7: suggestion += "g"; break;
+                            case 8: suggestion += "h"; break;
+                        }
+                        //logic for row encoding:
+                        switch(row_result[i]) {
+                            case 1: suggestion += "8"; break;
+                            case 2: suggestion += "7"; break;
+                            case 3: suggestion += "6"; break;
+                            case 4: suggestion += "5"; break;
+                            case 5: suggestion += "4"; break;
+                            case 6: suggestion += "3"; break;
+                            case 7: suggestion += "2"; break;
+                            case 8: suggestion += "1"; break;
+                        }
+                        System.out.println(suggestion);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    method to get current color of the coin:
+    ------------------------------------------------------------------------------------------------------------------*/
+    char get_color (String color) {
+        //To store the present row & col value
+        int present_row = 0 , present_col = 0;
+
+        //To split the input String:
+        String present_move = color.substring(1,3);
+
+        //To decode row and column position of present move:
+        switch (Character.getNumericValue(present_move.charAt(1))) {
+            case 1 : present_row = 8; break;
+            case 2 : present_row = 7; break;
+            case 3 : present_row = 6; break;
+            case 4 : present_row = 5; break;
+            case 5 : present_row = 4; break;
+            case 6 : present_row = 3; break;
+            case 7 : present_row = 2; break;
+            case 8 : present_row = 1; break;
+        }
+        switch (present_move.charAt(0)) {
+            case 'a' : present_col = 1; break;
+            case 'b' : present_col = 2; break;
+            case 'c' : present_col = 3; break;
+            case 'd' : present_col = 4; break;
+            case 'e' : present_col = 5; break;
+            case 'f' : present_col = 6; break;
+            case 'g' : present_col = 7; break;
+            case 'h' : present_col = 8; break;
+        }
+
+        return  cm_array[present_row][present_col].color;
+
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    implementation of print history:
+    ------------------------------------------------------------------------------------------------------------------*/
+    void print_history() {
+        for (Object object : History) {
+            System.out.println(object);
+        }
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    implementation of help method:
+    ------------------------------------------------------------------------------------------------------------------*/
+    void help() {
+        System.out.println("help");
+    }
+
+    /*------------------------------------------------------------------------------------------------------------------
+    implementation of quit method:
+    ------------------------------------------------------------------------------------------------------------------*/
+    void quit() {
+        System.out.println("Good Bye");
+        System.exit(0);
+    }
+
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+    public static void main(String args[]) throws Exception {
+
+        //object for class chessman:
+        ChessMan cm = new ChessMan();
+
+        //To read input from console:
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+
+        //creating array of objects
+        /*ChessMan[][] cm_array = new ChessMan[9][9];*/
+        for(int i=0; i<cm.cm_array.length; i++){
+            for(int j=0; j<cm.cm_array.length; j++) {
+                cm.cm_array[i][j] = new ChessMan();
+            }
+        }
+
+        //Entering values to the objects in the array:
+        //------------------------------------------------------------------------------------------------------------//
+        //white coins:
+        //------------------------------------------------------------------------------------------------------------//
+        //object : white rook-1
+        cm.cm_array[8][1].color = 'W';
+        cm.cm_array[8][1].id = "WR1";
+        cm.cm_array[8][1].position = "a1";
+        cm.cm_array[8][1].type = 'R';
+        cm.cm_array[8][1].pos_occ = 'Y';
+
+        //object : white rook-2
+        cm.cm_array[8][8].color = 'W';
+        cm.cm_array[8][8].id = "WR2";
+        cm.cm_array[8][8].position = "h1";
+        cm.cm_array[8][8].type = 'R';
+        cm.cm_array[8][8].pos_occ = 'Y';
+
+        //object : white bishop-1
+        cm.cm_array[8][3].color = 'W';
+        cm.cm_array[8][3].id = "WB1";
+        cm.cm_array[8][3].position = "c1";
+        cm.cm_array[8][3].type = 'B';
+        cm.cm_array[8][8].pos_occ = 'Y';
+
+        //object : white bishop-2
+        cm.cm_array[8][6].color = 'W';
+        cm.cm_array[8][6].id = "WB2";
+        cm.cm_array[8][6].position = "f1";
+        cm.cm_array[8][6].type = 'B';
+        cm.cm_array[8][6].pos_occ = 'Y';
+
+        //object : white Knight-1
+        cm.cm_array[8][2].color = 'W';
+        cm.cm_array[8][2].id = "WN1";
+        cm.cm_array[8][2].position = "b1";
+        cm.cm_array[8][2].type = 'N';
+        cm.cm_array[8][2].pos_occ = 'Y';
+
+        //object : white Knight-2
+        cm.cm_array[8][7].color = 'W';
+        cm.cm_array[8][7].id = "WN2";
+        cm.cm_array[8][7].position = "g1";
+        cm.cm_array[8][7].type = 'N';
+        cm.cm_array[8][7].pos_occ = 'Y';
+
+        //object : white King
+        cm.cm_array[8][5].color = 'W';
+        cm.cm_array[8][5].id = "WK1";
+        cm.cm_array[8][5].position = "e1";
+        cm.cm_array[8][5].type = 'K';
+        cm.cm_array[8][5].pos_occ = 'Y';
+
+        //object : white Queen
+        cm.cm_array[8][4].color = 'W';
+        cm.cm_array[8][4].id = "WQ1";
+        cm.cm_array[8][4].position = "d1";
+        cm.cm_array[8][4].type = 'Q';
+        cm.cm_array[8][4].pos_occ = 'Y';
+
+        //object : white pawn-1
+        cm.cm_array[7][1].color = 'W';
+        cm.cm_array[7][1].id = "WP1";
+        cm.cm_array[7][1].position = "a2";
+        cm.cm_array[7][1].type = 'P';
+        cm.cm_array[7][1].pos_occ = 'Y';
+
+        //object : white pawn-2
+        cm.cm_array[7][2].color = 'W';
+        cm.cm_array[7][2].id = "WP2";
+        cm.cm_array[7][2].position = "b2";
+        cm.cm_array[7][2].type = 'P';
+        cm.cm_array[7][2].pos_occ = 'Y';
+
+        //object : white pawn-3
+        cm.cm_array[7][3].color = 'W';
+        cm.cm_array[7][3].id = "WP3";
+        cm.cm_array[7][3].position = "c2";
+        cm.cm_array[7][3].type = 'P';
+        cm.cm_array[7][3].pos_occ = 'Y';
+
+        //object : white pawn-4
+        cm.cm_array[7][4].color = 'W';
+        cm.cm_array[7][4].id = "WP4";
+        cm.cm_array[7][4].position = "d2";
+        cm.cm_array[7][4].type = 'P';
+        cm.cm_array[7][4].pos_occ = 'Y';
+
+        //object : white pawn-5
+        cm.cm_array[7][5].color = 'W';
+        cm.cm_array[7][5].id = "WP5";
+        cm.cm_array[7][5].position = "e2";
+        cm.cm_array[7][5].type = 'P';
+        cm.cm_array[7][5].pos_occ = 'Y';
+
+        //object : white pawn-6
+        cm.cm_array[7][6].color = 'W';
+        cm.cm_array[7][6].id = "WP6";
+        cm.cm_array[7][6].position = "f2";
+        cm.cm_array[7][6].type = 'P';
+        cm.cm_array[7][6].pos_occ = 'Y';
+
+        //object : white pawn-7
+        cm.cm_array[7][7].color = 'W';
+        cm.cm_array[7][7].id = "WP7";
+        cm.cm_array[7][7].position = "g2";
+        cm.cm_array[7][7].type = 'P';
+        cm.cm_array[7][7].pos_occ = 'Y';
+
+        //object : white pawn-8
+        cm.cm_array[7][8].color = 'W';
+        cm.cm_array[7][8].id = "WP8";
+        cm.cm_array[7][8].position = "h2";
+        cm.cm_array[7][8].type = 'P';
+        cm.cm_array[7][8].pos_occ = 'Y';
+
+        //------------------------------------------------------------------------------------------------------------//
+        //Black coins
+        //------------------------------------------------------------------------------------------------------------//
+        //object : Black Rook-1
+        cm.cm_array[1][1].color = 'B';
+        cm.cm_array[1][1].id = "BR1";
+        cm.cm_array[1][1].position = "a8";
+        cm.cm_array[1][1].type = 'R';
+        cm.cm_array[1][1].pos_occ = 'Y';
+
+        //object : Black rook-2
+        cm.cm_array[1][8].color = 'B';
+        cm.cm_array[1][8].id = "BR2";
+        cm.cm_array[1][8].position = "h8";
+        cm.cm_array[1][8].type = 'R';
+        cm.cm_array[1][8].pos_occ = 'Y';
+
+        //object : Black bishop-1
+        cm.cm_array[1][3].color = 'B';
+        cm.cm_array[1][3].id = "BB1";
+        cm.cm_array[1][3].position = "c8";
+        cm.cm_array[1][3].type = 'B';
+        cm.cm_array[1][3].pos_occ = 'Y';
+
+        //object : Black bishop-2
+        cm.cm_array[1][6].color = 'B';
+        cm.cm_array[1][6].id = "BB2";
+        cm.cm_array[1][6].position = "f8";
+        cm.cm_array[1][6].type = 'B';
+        cm.cm_array[1][6].pos_occ = 'Y';
+
+        //object : Black Knight-1
+        cm.cm_array[1][2].color = 'B';
+        cm.cm_array[1][2].id = "BN1";
+        cm.cm_array[1][2].position = "b8";
+        cm.cm_array[1][2].type = 'N';
+        cm.cm_array[1][2].pos_occ = 'Y';
+
+        //object : Black Knight-2
+        cm.cm_array[1][7].color = 'B';
+        cm.cm_array[1][7].id = "BN2";
+        cm.cm_array[1][7].position = "g8";
+        cm.cm_array[1][7].type = 'N';
+        cm.cm_array[1][7].pos_occ = 'Y';
+
+        //object : Black King
+        cm.cm_array[1][5].color = 'B';
+        cm.cm_array[1][5].id = "BK1";
+        cm.cm_array[1][5].position = "e8";
+        cm.cm_array[1][5].type = 'K';
+        cm.cm_array[1][5].pos_occ = 'Y';
+
+        //object : Black Queen
+        cm.cm_array[1][4].color = 'B';
+        cm.cm_array[1][4].id = "BQ1";
+        cm.cm_array[1][4].position = "d8";
+        cm.cm_array[1][4].type = 'Q';
+        cm.cm_array[1][4].pos_occ = 'Y';
+
+        //object : Black pawn-1
+        cm.cm_array[2][1].color = 'B';
+        cm.cm_array[2][1].id = "BP1";
+        cm.cm_array[2][1].position = "a7";
+        cm.cm_array[2][1].type = 'P';
+        cm.cm_array[2][1].pos_occ = 'Y';
+
+        //object : Black pawn-2
+        cm.cm_array[2][2].color = 'B';
+        cm.cm_array[2][2].id = "BP2";
+        cm.cm_array[2][2].position = "b7";
+        cm.cm_array[2][2].type = 'P';
+        cm.cm_array[2][2].pos_occ = 'Y';
+
+        //object : Black pawn-3
+        cm.cm_array[2][3].color = 'B';
+        cm.cm_array[2][3].id = "BP3";
+        cm.cm_array[2][3].position = "c7";
+        cm.cm_array[2][3].type = 'P';
+        cm.cm_array[2][3].pos_occ = 'Y';
+
+        //object : Black pawn-4
+        cm.cm_array[2][4].color = 'B';
+        cm.cm_array[2][4].id = "BP4";
+        cm.cm_array[2][4].position = "d7";
+        cm.cm_array[2][4].type = 'P';
+        cm.cm_array[2][4].pos_occ = 'Y';
+
+        //object : Black pawn-5
+        cm.cm_array[2][5].color = 'B';
+        cm.cm_array[2][5].id = "BP5";
+        cm.cm_array[2][5].position = "e7";
+        cm.cm_array[2][5].type = 'P';
+        cm.cm_array[2][5].pos_occ = 'Y';
+
+        //object : Black pawn-6
+        cm.cm_array[2][6].color = 'B';
+        cm.cm_array[2][6].id = "BP6";
+        cm.cm_array[2][6].position = "f7";
+        cm.cm_array[2][6].type = 'P';
+        cm.cm_array[2][6].pos_occ = 'Y';
+
+        //object : Black pawn-7
+        cm.cm_array[2][7].color = 'B';
+        cm.cm_array[2][7].id = "BP7";
+        cm.cm_array[2][7].position = "g7";
+        cm.cm_array[2][7].type = 'P';
+        cm.cm_array[2][7].pos_occ = 'Y';
+
+        //object : Black pawn-8
+        cm.cm_array[2][8].color = 'B';
+        cm.cm_array[2][8].id = "BP8";
+        cm.cm_array[2][8].position = "h7";
+        cm.cm_array[2][8].type = 'P';
+        cm.cm_array[2][8].pos_occ = 'Y';
+
+        /*--------------------------------------------------------------------------------------------------------------
+        Adding Board index to the Array
+        --------------------------------------------------------------------------------------------------------------*/
+        cm.cm_array[0][1].board_index = "a ";
+        cm.cm_array[0][2].board_index = "b ";
+        cm.cm_array[0][3].board_index = "c ";
+        cm.cm_array[0][4].board_index = "d ";
+        cm.cm_array[0][5].board_index = "e ";
+        cm.cm_array[0][6].board_index = "f ";
+        cm.cm_array[0][7].board_index = "g ";
+        cm.cm_array[0][8].board_index = "h ";
+
+        cm.cm_array[1][0].board_index = "8 ";
+        cm.cm_array[2][0].board_index = "7 ";
+        cm.cm_array[3][0].board_index = "6 ";
+        cm.cm_array[4][0].board_index = "5 ";
+        cm.cm_array[5][0].board_index = "4 ";
+        cm.cm_array[6][0].board_index = "3 ";
+        cm.cm_array[7][0].board_index = "2 ";
+        cm.cm_array[8][0].board_index = "1 ";
+
+        /*--------------------------------------------------------------------------------------------------------------
+        Assigning position to other empty objects rather than the chessman's:
+        --------------------------------------------------------------------------------------------------------------*/
+        cm.cm_array[3][1].position = "a6";
+        cm.cm_array[3][2].position = "b6";
+        cm.cm_array[3][3].position = "c6";
+        cm.cm_array[3][4].position = "d6";
+        cm.cm_array[3][5].position = "e6";
+        cm.cm_array[3][6].position = "f6";
+        cm.cm_array[3][7].position = "g6";
+        cm.cm_array[3][8].position = "h6";
+
+        cm.cm_array[4][1].position = "a5";
+        cm.cm_array[4][2].position = "b5";
+        cm.cm_array[4][3].position = "c5";
+        cm.cm_array[4][4].position = "d5";
+        cm.cm_array[4][5].position = "e5";
+        cm.cm_array[4][6].position = "f5";
+        cm.cm_array[4][7].position = "g5";
+        cm.cm_array[4][8].position = "h5";
+
+        cm.cm_array[5][1].position = "a4";
+        cm.cm_array[5][2].position = "b4";
+        cm.cm_array[5][3].position = "c4";
+        cm.cm_array[5][4].position = "d4";
+        cm.cm_array[5][5].position = "e4";
+        cm.cm_array[5][6].position = "f4";
+        cm.cm_array[5][7].position = "g4";
+        cm.cm_array[5][8].position = "h4";
+
+        cm.cm_array[6][1].position = "a3";
+        cm.cm_array[6][2].position = "b3";
+        cm.cm_array[6][3].position = "c3";
+        cm.cm_array[6][4].position = "d3";
+        cm.cm_array[6][5].position = "e3";
+        cm.cm_array[6][6].position = "f3";
+        cm.cm_array[6][7].position = "g3";
+        cm.cm_array[6][8].position = "h3";
+
+        /*--------------------------------------------------------------------------------------------------------------
+        continues running of the program and other logic implementations:
+        --------------------------------------------------------------------------------------------------------------*/
+        while (true) {
+
+            try {
+
+                //Printing the board:
+                cm.print_board();
+                //reading input from the user:
+                cm.input = br.readLine();
+
+                if(cm.input.equals("?")) {
+                    cm.help();
+                }
+
+                if(cm.input.equals("!")) {
+                    cm.print_history();
+                }
+
+                if (cm.input.equals("~")) {
+                    cm.quit();
+                }
+
+                //before moving the coin i need to validate the string, here i'm calling the validate method:
+                if (cm.validate(cm.input)) {
+                    //moving the coin:
+                    switch (cm.get_color(cm.input)) {
+                        case 'W':
+                            if (cm.flag == cm.get_color(cm.input)) {
+                                cm.flag = 'B';
+                                //cm.move_chessman(cm.input);
+                                if (cm.input.charAt(0) == 'N') {
+                                    if(cm.validate_knight_move()) {
+                                        cm.move_chessman(cm.input);
+                                        cm.History.add(cm.input);
+                                    }
+                                } else if (cm.input.charAt(0) != 'N') {
+                                    cm.move_chessman(cm.input);
+                                    cm.History.add(cm.input);
+                                }
+
+                            }
+                            else {
+                                System.out.println("Black has to play");
+                            }
+                        break;
+
+                        case 'B':
+                            if (cm.flag == cm.get_color(cm.input)) {
+                                cm.flag = 'W';
+                                //cm.move_chessman(cm.input);
+                                if (cm.input.charAt(0) == 'N') {
+                                    if(cm.validate_knight_move()) {
+                                        cm.move_chessman(cm.input);
+                                        cm.History.add(cm.input);
+                                    }
+                                } else if (cm.input.charAt(0) != 'N') {
+                                    cm.move_chessman(cm.input);
+                                    cm.History.add(cm.input);
+                                }
+
+                            }
+                            else {
+                                System.out.println("White has to play");
+                            }
+                        break;
+
+                    }
+                }
+            }
+            catch (Exception e) {
+                if (!cm.input.equals("?") && !cm.input.equals("!") && !cm.input.equals("~")) {
+                    System.out.println("it's not a valid move");
+                }
+
+            }
+        }
+
+
+    }
+}
